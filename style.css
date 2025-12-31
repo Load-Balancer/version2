@@ -245,6 +245,13 @@ body {
   font-size: 39px; /* adjust */
   font-weight: 400;
   color: #000;
+  background: transparent;
+  transition: background 0.25s ease;
+}
+/* Grey background when empty */
+#entryName.empty {
+  background: #e0e0e0;
+  border-radius: 6px;
 }
 .category-pills {
   display: flex;

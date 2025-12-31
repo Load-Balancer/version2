@@ -107,6 +107,7 @@ fab.addEventListener("click", () => {
   // Due date empty
   createDateBoxes("dueDateBoxes", null);
   dueContainer.classList.remove("filled");
+  updateNameBackground();
 });
 
 /* ---------- DUE DATE PICKER ---------- */
@@ -155,6 +156,14 @@ categoryPills.forEach((pill) => {
 });
 
 const nameInput = document.getElementById("entryName");
+function updateNameBackground() {
+  if (nameInput.value.trim().length === 0) {
+    nameInput.classList.add("empty");
+  } else {
+    nameInput.classList.remove("empty");
+  }
+}
+
 const donePill = document.getElementById("donePill");
 
 let selectedCategory = "Task"; // default since Task is active initially
@@ -187,7 +196,11 @@ function checkFormValidity() {
 }
 
 /* ---------- LISTENERS ---------- */
-nameInput.addEventListener("input", checkFormValidity);
+nameInput.addEventListener("input", () => {
+  checkFormValidity();
+  updateNameBackground();
+});
+
 dueInput.addEventListener("change", checkFormValidity);
 function getEntries() {
   return JSON.parse(localStorage.getItem("entries")) || [];
@@ -308,6 +321,7 @@ function openEditModal(entry) {
 
   // Fill name
   nameInput.value = entry.name;
+  updateNameBackground();
 
   // Fill start date
   startInput.value = entry.startDate;
@@ -405,6 +419,7 @@ function closeModal() {
   overlay.style.display = "none";
 
   nameInput.value = "";
+  updateNameBackground();
   dueInput.value = "";
   startInput.value = "";
 
