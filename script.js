@@ -8,6 +8,9 @@ const closeModalBtn = document.getElementById("closeModalBtn");
 const dueInput = document.getElementById("dueDateInput");
 const dueContainer = document.getElementById("dueDateBoxes");
 
+const startInput = document.getElementById("startDateInput");
+const startContainer = document.getElementById("startDateBoxes");
+
 /* ---------- SCROLL FAB LOGIC ---------- */
 window.addEventListener("scroll", () => {
   const currentScrollY = window.scrollY;
@@ -95,7 +98,8 @@ fab.addEventListener("click", () => {
 
   const today = new Date().toISOString().split("T")[0];
 
-  // Start date filled
+  // START DATE (editable)
+  startInput.value = today;
   createDateBoxes("startDateBoxes", today);
 
   // Due date empty
@@ -117,6 +121,25 @@ dueContainer.addEventListener("click", () => {
   dueInput.click(); // fallback
 });
 dueContainer.querySelectorAll(".date-box, .date-separator").forEach((el) => {
+  el.style.cursor = "pointer";
+});
+
+/* ---------- START DATE PICKER ---------- */
+
+// Fill boxes after date selection
+startInput.addEventListener("change", () => {
+  createDateBoxes("startDateBoxes", startInput.value);
+});
+
+// Clicking boxes opens calendar
+startContainer.addEventListener("click", () => {
+  startInput.showPicker?.();
+  startInput.focus();
+  startInput.click();
+});
+
+// Cursor feedback
+startContainer.querySelectorAll(".date-box, .date-separator").forEach((el) => {
   el.style.cursor = "pointer";
 });
 
