@@ -104,10 +104,28 @@ fab.addEventListener("click", () => {
   startInput.value = today;
   createDateBoxes("startDateBoxes", today);
 
-  // Due date empty
+  // DUE DATE empty
+  dueInput.value = "";
   createDateBoxes("dueDateBoxes", null);
   dueContainer.classList.remove("filled");
+
+  // NAME background state
   updateNameBackground();
+
+  // 🔥 SET DEFAULT CATEGORY BASED ON ACTIVE TAB
+  const defaultCategory = currentFilter || "Task";
+  selectedCategory = defaultCategory;
+
+  categoryPills.forEach((pill) => {
+    pill.classList.toggle(
+      "active",
+      pill.textContent.trim() === defaultCategory
+    );
+  });
+
+  // Reset DONE state
+  donePill.classList.remove("enabled");
+  donePill.classList.add("disabled");
 });
 
 /* ---------- DUE DATE PICKER ---------- */

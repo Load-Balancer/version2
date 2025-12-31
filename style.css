@@ -24,13 +24,26 @@ body {
 .tab {
   position: absolute;
   padding: 8px 20px;
-  border: 4px solid #00a2ad; /* 👈 4px stroke */
-  border-radius: 999px; /* pill shape */
+  border: 4px solid #00a2ad;
+  border-radius: 5px;
+
   font-size: 39px;
-  font-weight: 20;
   font-family: "BBH Bogle", sans-serif;
+
   cursor: pointer;
   user-select: none;
+
+  background: #ffffff;
+  color: #00a2ad;
+
+  /* raised look */
+  box-shadow: -3px 10px 0 #008c95;
+
+  /* 👇 unified press system */
+  --press-y: 0px;
+  transform: translateY(var(--press-y));
+
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
 }
 
 /* Exact positioning rules */
@@ -44,8 +57,9 @@ body {
 
 .tab-center {
   left: 50%;
-  transform: translateX(-50%);
+  transform: translateX(-50%) translateY(var(--press-y));
 }
+
 .all-entries-list {
   margin-top: 32px;
 
@@ -96,7 +110,15 @@ body {
   align-items: center;
   justify-content: center;
 
-  transition: transform 0.6s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.6s ease;
+  /* 👇 raised look */
+
+  box-shadow: -3px 10px 0 #008c95;
+
+  /* 👇 unified press system */
+  --press-y: 0px;
+  transform: translateX(-50%) translateY(var(--press-y));
+  transition: transform 0.6s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.6s ease,
+    box-shadow 0.15s ease;
 }
 
 /* Hidden state */
@@ -104,6 +126,10 @@ body {
   transform: translate(-50%, 220px);
   opacity: 0;
   pointer-events: none;
+}
+.fab:active {
+  --press-y: 10px;
+  box-shadow: 0 0 0 transparent;
 }
 
 /* PLUS SIGN */
@@ -316,6 +342,10 @@ body {
 .tab.active {
   background: #00a2ad;
   color: #ffffff;
+
+  /* 👇 pressed down */
+  --press-y: 6px;
+  box-shadow: 0 0 0 transparent;
 }
 
 .each-entry.completed {
@@ -375,4 +405,3 @@ body {
   opacity: 1;
   transform: translateY(-50%) scale(1);
 }
-
