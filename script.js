@@ -1,5 +1,7 @@
 let lastScrollY = window.scrollY;
 let scrollTimeout;
+let editingEntryId = null;
+let currentFilter = null; // null = all
 
 const fab = document.querySelector(".fab");
 const overlay = document.getElementById("overlay");
@@ -199,6 +201,10 @@ function createEntryElement(entry) {
   wrapper.className = "each-entry";
   wrapper.dataset.category = entry.category; // for future tab filtering
 
+  if (entry.completed) {
+    wrapper.classList.add("completed");
+  }
+
   const nameDiv = document.createElement("div");
   nameDiv.className = "entry-name";
   nameDiv.textContent = entry.name;
@@ -210,8 +216,119 @@ function createEntryElement(entry) {
   wrapper.appendChild(nameDiv);
   wrapper.appendChild(dateDiv);
 
+  let clickTimer = null;
+  let startX = 0;
+  let currentX = 0;
+  let isDragging = false;
+
+  /* ---------- TOUCH / SWIPE LOGIC ---------- */
+
+  wrapper.addEventListener("pointerdown", (e) => {
+    startX = e.clientX;
+    isDragging = true;
+    wrapper.style.transition = "none";
+  });
+
+  wrapper.addEventListener("pointermove", (e) => {
+    if (!isDragging) return;
+
+    currentX = e.clientX - startX;
+
+    // limit drag distance
+    if (Math.abs(currentX) > 120) return;
+
+    wrapper.style.transform = `translateX(${currentX}px)`;
+  });
+
+  wrapper.addEventListener("pointerup", () => {
+    wrapper.style.transition = "transform 0.3s ease";
+
+    // 👉 SWIPE RIGHT → COMPLETE
+    if (currentX < -80) {
+      toggleComplete(entry.id);
+    }
+
+    // 👈 SWIPE LEFT → DELETE
+    else if (currentX > 80) {
+      deleteEntry(entry.id);
+      return;
+    }
+
+    wrapper.style.transform = "translateX(0)";
+    isDragging = false;
+    startX = 0;
+    currentX = 0;
+  });
+  wrapper.addEventListener("pointercancel", () => {
+    wrapper.style.transform = "translateX(0)";
+    isDragging = false;
+  });
+
+  /* ---------- CLICK / DOUBLE CLICK ---------- */
+
+  wrapper.addEventListener("click", () => {
+    if (clickTimer) return;
+
+    clickTimer = setTimeout(() => {
+      clickTimer = null;
+    }, 250);
+  });
+
+  wrapper.addEventListener("dblclick", () => {
+    clearTimeout(clickTimer);
+    clickTimer = null;
+    openEditModal(entry);
+  });
   return wrapper;
 }
+function toggleComplete(id) {
+  const entries = getEntries();
+  const index = entries.findIndex((e) => e.id === id);
+  if (index === -1) return;
+
+  entries[index].completed = !entries[index].completed;
+
+  saveEntries(entries);
+  renderEntries(currentFilter);
+}
+function deleteEntry(id) {
+  const confirmed = confirm("Delete this entry?");
+  if (!confirmed) return;
+
+  const entries = getEntries().filter((e) => e.id !== id);
+  saveEntries(entries);
+
+  renderEntries(currentFilter);
+}
+
+function openEditModal(entry) {
+  editingEntryId = entry.id;
+
+  overlay.style.display = "flex";
+
+  // Fill name
+  nameInput.value = entry.name;
+
+  // Fill start date
+  startInput.value = entry.startDate;
+  createDateBoxes("startDateBoxes", entry.startDate);
+
+  // Fill due date
+  dueInput.value = entry.dueDate;
+  createDateBoxes("dueDateBoxes", entry.dueDate);
+  dueContainer.classList.add("filled");
+
+  // Category
+  categoryPills.forEach((p) => {
+    p.classList.toggle("active", p.textContent.trim() === entry.category);
+    document.getElementById("deletePill").style.display = "block";
+  });
+
+  selectedCategory = entry.category;
+
+  checkFormValidity();
+}
+
 function formatDate(dateStr) {
   const date = new Date(dateStr);
   return date.toLocaleDateString("en-GB", {
@@ -253,30 +370,45 @@ function validateDates() {
 
 donePill.addEventListener("click", () => {
   if (!donePill.classList.contains("enabled")) return;
-
-  // 🔴 DATE VALIDATION HERE
   if (!validateDates()) return;
 
-  const entry = {
-    id: Date.now(),
-    name: nameInput.value.trim(),
-    dueDate: dueInput.value,
-    category: selectedCategory,
-  };
-
   const entries = getEntries();
-  entries.push(entry);
-  saveEntries(entries);
-  setActiveTab(null); // ✅ RESET TAB STATE
-  renderEntries(); // re-render full list
 
+  if (editingEntryId) {
+    const index = entries.findIndex((e) => e.id === editingEntryId);
+    if (index !== -1) {
+      entries[index] = {
+        ...entries[index],
+        name: nameInput.value.trim(),
+        startDate: startInput.value, // ✅ FIX
+        dueDate: dueInput.value,
+        category: selectedCategory,
+      };
+    }
+  } else {
+    entries.push({
+      id: Date.now(),
+      name: nameInput.value.trim(),
+      startDate: startInput.value, // ✅ FIX
+      dueDate: dueInput.value,
+      category: selectedCategory,
+      completed: false,
+    });
+  }
+
+  saveEntries(entries);
+  renderEntries(currentFilter);
   closeModal();
 });
+
 function closeModal() {
   overlay.style.display = "none";
 
   nameInput.value = "";
   dueInput.value = "";
+  startInput.value = "";
+
+  editingEntryId = null; // 🔴 important
 
   categoryPills.forEach((p) => p.classList.remove("active"));
   categoryPills[0].classList.add("active"); // Task default
@@ -287,7 +419,7 @@ function closeModal() {
 }
 
 document.addEventListener("DOMContentLoaded", () => {
-  renderEntries(); // no filter on load
+  renderEntries(currentFilter); // no filter on load
 });
 
 const taskTab = document.querySelector(".tab-left");
@@ -297,21 +429,25 @@ const appTitle = document.querySelector(".app-title");
 
 taskTab.addEventListener("click", () => {
   setActiveTab(taskTab);
-  renderEntries("Task");
+  currentFilter = "Task";
+  renderEntries(currentFilter);
 });
 
 courseTab.addEventListener("click", () => {
   setActiveTab(courseTab);
-  renderEntries("Course");
+  currentFilter = "Course";
+  renderEntries(currentFilter);
 });
 
 ideaTab.addEventListener("click", () => {
   setActiveTab(ideaTab);
-  renderEntries("Idea");
+  currentFilter = "Idea";
+  renderEntries(currentFilter);
 });
 
 appTitle.addEventListener("click", () => {
-  setActiveTab(null); // reset highlight
+  setActiveTab(null);
+  currentFilter = null;
   renderEntries();
 });
 
@@ -330,3 +466,18 @@ overlay.addEventListener("click", (e) => {
 });
 //close when clicked on X on top of the modal
 closeModalBtn.addEventListener("click", closeModal);
+
+const deletePill = document.getElementById("deletePill");
+
+deletePill.addEventListener("click", () => {
+  if (!editingEntryId) return;
+
+  const confirmed = confirm("Delete this entry?");
+  if (!confirmed) return;
+
+  const entries = getEntries().filter((e) => e.id !== editingEntryId);
+  saveEntries(entries);
+
+  renderEntries(currentFilter);
+  closeModal();
+});

@@ -200,7 +200,7 @@ body {
 /* START DATE */
 .start-date .date-box {
   background: #d9d9d9;
-  border: 2px solid #d9d9d9;          /* 🔥 this was missing */
+  border: 2px solid #d9d9d9; /* 🔥 this was missing */
 }
 
 /* DUE DATE */
@@ -233,16 +233,16 @@ body {
 .field label {
   display: block;
   font-family: "BBH Bogle", sans-serif;
-  font-size: 29px;                    /* change as needed */
+  font-size: 29px; /* change as needed */
   font-weight: 500;
   color: #000000;
   margin-bottom: 10px;
   letter-spacing: 1px;
 }
 #entryName {
-    font-family: "Gabarito", sans-serif;
-   /* or Figma font */
-  font-size: 39px;                        /* adjust */
+  font-family: "Gabarito", sans-serif;
+  /* or Figma font */
+  font-size: 39px; /* adjust */
   font-weight: 400;
   color: #000;
 }
@@ -277,7 +277,7 @@ body {
 /* Wrapper to position DONE relative to card */
 .done-pill-wrapper {
   position: absolute;
-  bottom: 46px;               /* 👈 exactly 46px from card edge */
+  bottom: 46px; /* 👈 exactly 46px from card edge */
   left: 50%;
   transform: translateX(-50%);
 }
@@ -310,6 +310,15 @@ body {
   background: #00a2ad;
   color: #ffffff;
 }
+
+.each-entry.completed {
+  opacity: 0.5;
+}
+
+.each-entry.completed .entry-name {
+  text-decoration: line-through;
+}
+
 /* Modal close (X) button */
 .modal-close {
   position: absolute;
@@ -332,3 +341,31 @@ body {
 .modal-close:hover {
   opacity: 0.6;
 }
+.each-entry {
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* Checkmark */
+.entry-check {
+  position: absolute;
+  right: 20px;
+  top: 50%;
+  transform: translateY(-50%) scale(0.6);
+  font-size: 32px;
+  color: #00a2ad;
+  opacity: 0;
+  transition: all 0.35s ease;
+}
+
+/* Completed animation */
+.each-entry.completed {
+  transform: translateX(18px);
+}
+
+.each-entry.completed .entry-check {
+  opacity: 1;
+  transform: translateY(-50%) scale(1);
+}
+
