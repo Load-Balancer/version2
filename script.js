@@ -326,6 +326,8 @@ function toggleComplete(id) {
   const index = entries.findIndex((e) => e.id === id);
   if (index === -1) return;
 
+  const wasCompleted = entries[index].completed; // ✅ REQUIRED
+
   entries[index].completed = !entries[index].completed;
   // 🔊 play cheer ONLY when marking complete
   if (!wasCompleted && entries[index].completed) {
