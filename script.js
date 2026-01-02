@@ -469,23 +469,43 @@ function playTabSound() {
 
 taskTab.addEventListener("click", () => {
   playTabSound();
-  setActiveTab(taskTab);
-  currentFilter = "Task";
-  renderEntries(currentFilter);
+  if (taskTab.classList.contains("active")) {
+    // 🔁 already active → reset
+    setActiveTab(null);
+    currentFilter = null;
+    renderEntries();
+  } else {
+    // ▶️ normal activation
+    setActiveTab(taskTab);
+    currentFilter = "Task";
+    renderEntries(currentFilter);
+  }
 });
 
 courseTab.addEventListener("click", () => {
   playTabSound();
-  setActiveTab(courseTab);
-  currentFilter = "Course";
-  renderEntries(currentFilter);
+  if (courseTab.classList.contains("active")) {
+    setActiveTab(null);
+    currentFilter = null;
+    renderEntries();
+  } else {
+    setActiveTab(courseTab);
+    currentFilter = "Course";
+    renderEntries(currentFilter);
+  }
 });
 
 ideaTab.addEventListener("click", () => {
   playTabSound();
-  setActiveTab(ideaTab);
-  currentFilter = "Idea";
-  renderEntries(currentFilter);
+  if (ideaTab.classList.contains("active")) {
+    setActiveTab(null);
+    currentFilter = null;
+    renderEntries();
+  } else {
+    setActiveTab(ideaTab);
+    currentFilter = "Idea";
+    renderEntries(currentFilter);
+  }
 });
 
 appTitle.addEventListener("click", () => {
