@@ -525,3 +525,34 @@ body {
   opacity: 0;
   pointer-events: none;
 }
+.clear-pill {
+  position: fixed;
+  top: 24px;
+  left: 24px;
+  padding: 12px 28px;
+
+  font-family: "BBH Bogle", sans-serif;
+  font-size: 20px;
+
+  background: #fff;
+  color: #014656;
+  border-radius: 5px;
+  border: 2px solid #014656;
+  box-shadow: -3px 8px 0 #014656;
+  cursor: pointer;
+  z-index: 9999;
+
+  transition: transform 0.15s ease, opacity 0.15s ease;
+  letter-spacing: 1px;
+}
+
+.clear-pill:active {
+  transform: translateY(4px);
+  box-shadow: none;
+}
+
+/* Hidden state */
+.clear-pill.hidden {
+  opacity: 0;
+  pointer-events: none;
+}

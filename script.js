@@ -584,3 +584,46 @@ document.addEventListener("DOMContentLoaded", () => {
     deferredPrompt = null;
   });
 });
+const clearBtn = document.getElementById("clearCompleted");
+
+function updateClearBtnVisibility() {
+  const entries = getEntries();
+  const hasCompleted = entries.some((e) => e.completed);
+
+  if (hasCompleted) {
+    clearBtn.classList.remove("hidden");
+  } else {
+    clearBtn.classList.add("hidden");
+  }
+}
+
+// Call this every time you render or modify entries
+function renderEntries(filterCategory = null) {
+  const entries = getEntries();
+  const list = document.querySelector(".all-entries-list");
+
+  list.innerHTML = "";
+
+  const filteredEntries = filterCategory
+    ? entries.filter((e) => e.category === filterCategory)
+    : entries;
+
+  filteredEntries.forEach((entry) => {
+    list.appendChild(createEntryElement(entry));
+  });
+
+  // Update clear button visibility
+  updateClearBtnVisibility();
+}
+
+// Clear completed logic
+clearBtn.addEventListener("click", () => {
+  const confirmed = confirm("Delete all completed tasks?");
+  if (!confirmed) return;
+
+  const entries = getEntries();
+  const remaining = entries.filter((entry) => !entry.completed);
+
+  saveEntries(remaining);
+  renderEntries(currentFilter); // updates list and button visibility
+});
