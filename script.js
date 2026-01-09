@@ -394,9 +394,19 @@ function formatDate(dateStr) {
 }
 
 function renderEntries(filterCategory = null) {
-  const entries = getEntries();
-  const list = document.querySelector(".all-entries-list");
+  let entries = getEntries();
 
+  // 🔥 SORT BY DUE DATE (nearest → farthest)
+  entries.sort((a, b) => {
+    return new Date(a.dueDate) - new Date(b.dueDate);
+  });
+
+  // Optional: keep completed at bottom (recommended UX)
+  entries.sort((a, b) => {
+    return a.completed - b.completed;
+  });
+
+  const list = document.querySelector(".all-entries-list");
   list.innerHTML = "";
 
   const filteredEntries = filterCategory
@@ -406,6 +416,8 @@ function renderEntries(filterCategory = null) {
   filteredEntries.forEach((entry) => {
     list.appendChild(createEntryElement(entry));
   });
+  // Update clear button visibility
+  updateClearBtnVisibility();
 }
 
 function validateDates() {
@@ -596,25 +608,6 @@ function updateClearBtnVisibility() {
   } else {
     clearBtn.classList.add("hidden");
   }
-}
-
-// Call this every time you render or modify entries
-function renderEntries(filterCategory = null) {
-  const entries = getEntries();
-  const list = document.querySelector(".all-entries-list");
-
-  list.innerHTML = "";
-
-  const filteredEntries = filterCategory
-    ? entries.filter((e) => e.category === filterCategory)
-    : entries;
-
-  filteredEntries.forEach((entry) => {
-    list.appendChild(createEntryElement(entry));
-  });
-
-  // Update clear button visibility
-  updateClearBtnVisibility();
 }
 
 // Clear completed logic
