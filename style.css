@@ -609,7 +609,7 @@ body.modal-open .clear-pill {
   left: 0;
   justify-content: flex-start;
   padding-left: 16px;
-  color: #ff4d4d;
+  color: #454343;
 }
 
 /* DONE (right side) */
@@ -617,7 +617,8 @@ body.modal-open .clear-pill {
   right: 0;
   justify-content: flex-end;
   padding-right: 16px;
-  color: #2ecc71;
+  color: #00a2ad;
+  
 }
 /* ===============================
    INFO BUTTON (TOP RIGHT)

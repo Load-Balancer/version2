@@ -6,7 +6,7 @@ let currentFilter = null; // null = all
 const tabClickSound = new Audio("trimmed.m4a");
 tabClickSound.volume = 1; // adjust as needed
 
-const completeSound = new Audio("cheer.mp3"); // ✅ task completed
+const completeSound = new Audio("happy-message-ping-351298.mp3");
 const deleteSound = new Audio("wtf.mp3");
 const fabSound = new Audio("plop.m4a");
 
